@@ -110,7 +110,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, Props>(
           </video>
         ) : (
           <div className="h-full flex items-center justify-center text-white">
-            请上传视频
+            upload video and srt first
           </div>
         )}
       </div>
