@@ -1,4 +1,4 @@
-// components/VideoPlayer.tsx
+// VideoPlayer.tsx
 import React, {
   useRef,
   useImperativeHandle,
@@ -31,7 +31,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, Props>(
     const playerRef = useRef<Plyr | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    // Convert subtitles to WebVTT format
+  // Convert subtitles to WebVTT format
     const generateVtt = () => {
       if (!subtitles || subtitles.length === 0) return "";
       return (
@@ -45,7 +45,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, Props>(
       );
     };
 
-    // Create a blob URL for the VTT track
+  // Create a blob URL for the VTT track
     const vttUrl = React.useMemo(() => {
       const vtt = generateVtt();
       if (!vtt) return "";
@@ -53,7 +53,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, Props>(
       return URL.createObjectURL(blob);
     }, [subtitles]);
 
-    // 初始化 Plyr on container div
+  // Initialize Plyr on container div
     useEffect(() => {
       if (containerRef.current && !playerRef.current) {
         const videoEl = containerRef.current.querySelector("video");
@@ -79,7 +79,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, Props>(
       }
     }, [onTimeUpdate, videoUrl, vttUrl]);
 
-    // 暴露 seek 方法
+  // Expose seek method
     useImperativeHandle(ref, () => ({
       seek: (time: number) => {
         if (playerRef.current) {

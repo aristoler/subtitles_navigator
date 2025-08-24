@@ -6,32 +6,45 @@ interface Props {
   subtitles: SubtitleItem[];
   currentTime: number;
   onSeek: (time: number) => void;
-  onEdit: (subs: SubtitleItem[]) => void;
+  onEdit: (subs: SubtitleItem[]) => void; // If not used, consider removing
 }
 
 const SubtitleList: React.FC<Props> = ({
   subtitles,
   currentTime,
   onSeek,
-  onEdit,
+  // onEdit,
 }) => {
   const activeRef = React.useRef<HTMLDivElement>(null);
 
+  // Find the last subtitle whose startTime is <= currentTime
+  let lastActiveId: number | null = null;
+  for (let i = 0; i < subtitles.length; i++) {
+    if (currentTime >= subtitles[i].startTime) {
+      lastActiveId = subtitles[i].id;
+    }
+    if (currentTime < subtitles[i].endTime) {
+      break;
+    }
+  }
+
   return (
-    <div>
+    <div data-subtitle-list>
       {subtitles.map((s) => {
-        const isActive = currentTime >= s.startTime && currentTime <= s.endTime;
+        const isActive = s.id === lastActiveId;
         return (
           <div
             key={s.id}
             ref={isActive ? activeRef : undefined}
-            className={`p-2 cursor-pointer ${isActive ? "bg-blue-200" : ""}`}
+            className={`subtitle-panel${isActive ? ' active' : ''}`}
             onClick={() => onSeek(s.startTime / 1000)}
           >
-            <div className="text-xs text-gray-500">
+            <div className="subtitle-time">
               {s.startStr} - {s.endStr}
             </div>
-            <div>{s.text}</div>
+            <div className="subtitle-text">
+              {s.text}
+            </div>
           </div>
         );
       })}

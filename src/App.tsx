@@ -18,28 +18,39 @@ const App: React.FC = () => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [subtitles, setSubtitles] = useState<SubtitleItem[]>([]);
   const [currentTime, setCurrentTime] = useState<number>(0);
+  const [autoSync, setAutoSync] = useState(false);
 
-  // 播放时间更新
-  const handleTimeUpdate = (time: number) => {
-    setCurrentTime(time);
-  };
+  const handleTimeUpdate = (time: number) => setCurrentTime(time);
 
   const videoPlayerRef = React.useRef<{ seek: (time: number) => void }>(null);
 
-  // 点击字幕 → 跳转到对应时间
   const handleSeekTo = (time: number) => {
     videoPlayerRef.current?.seek(time);
-    console.log("seek to", time);
   };
 
-  // Sync button handler: scroll to active subtitle
   const handleSyncSubtitle = () => {
+    if (!autoSync) {
+      // First click: scroll once and enable auto-sync
+      const subtitleListDiv = document.querySelector('[data-subtitle-list]');
+      const activeDiv = subtitleListDiv?.querySelector('.active');
+      if (activeDiv) {
+        activeDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      setAutoSync(true);
+    } else {
+      // If already auto-syncing, disable auto-sync
+      setAutoSync(false);
+    }
+  };
+  // Auto-sync: scroll active subtitle on time update
+  React.useEffect(() => {
+    if (!autoSync) return;
     const subtitleListDiv = document.querySelector('[data-subtitle-list]');
-    const activeDiv = subtitleListDiv?.querySelector('.bg-blue-200');
+    const activeDiv = subtitleListDiv?.querySelector('.active');
     if (activeDiv) {
       activeDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  };
+  }, [currentTime, autoSync]);
 
   return (
     <div style={{display:'flex',flexDirection:'column',height: '100vh',overflow: 'hidden'}}>
@@ -54,12 +65,13 @@ const App: React.FC = () => {
       </div>
 
       {/* ControlPanel below video */}
-      <div style={{flex: '0 0 48px',display:'flex',alignItems:'right',justifyContent:'right'}}>
+      <div style={{flex: '0 0 48px',display:'flex',alignItems:'center',justifyContent:'center'}}>
         <ControlPanel
           subtitles={subtitles}
           onVideoUpload={setVideoUrl}
           onSubtitleUpload={setSubtitles}
           onSync={handleSyncSubtitle}
+          autoSync={autoSync}
         />
       </div>
 
