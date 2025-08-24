@@ -29,7 +29,7 @@ const SubtitleList: React.FC<Props> = ({
             onClick={() => onSeek(s.startTime / 1000)}
           >
             <div className="text-xs text-gray-500">
-              {s.startFmt} - {s.endFmt}
+              {s.startStr} - {s.endStr}
             </div>
             <div>{s.text}</div>
           </div>

@@ -9,8 +9,8 @@ export interface SubtitleItem {
   id: number;
   startTime: number; // 毫秒
   endTime: number;   // 毫秒
-  startFmt: string;
-  endFmt: string;
+  startStr: string;
+  endStr: string;
   text: string;
 }
 
@@ -23,7 +23,7 @@ const App: React.FC = () => {
   const handleTimeUpdate = (time: number) => {
     setCurrentTime(time);
   };
-  
+
   const videoPlayerRef = React.useRef<{ seek: (time: number) => void }>(null);
 
   // 点击字幕 → 跳转到对应时间
@@ -41,11 +41,6 @@ const App: React.FC = () => {
     }
   };
 
-  // 获取当前字幕文本
-  const currentSubtitleText = subtitles.find(
-    (s) => currentTime >= s.startTime && currentTime <= s.endTime
-  )?.text || "";
-
   return (
     <div style={{display:'flex',flexDirection:'column',height: '100vh',overflow: 'hidden'}}>
       {/*Video Player at Top */}
@@ -54,7 +49,7 @@ const App: React.FC = () => {
           ref={videoPlayerRef}
           videoUrl={videoUrl}
           onTimeUpdate={handleTimeUpdate}
-          subtitleText={currentSubtitleText}
+          subtitles={subtitles}
         />
       </div>
 

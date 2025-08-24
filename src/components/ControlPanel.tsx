@@ -33,8 +33,8 @@ const ControlPanel: React.FC<Props> = ({ subtitles, onVideoUpload, onSubtitleUpl
       id: index + 1,
       startTime: srtTimeToMs(item.startTime),
       endTime: srtTimeToMs(item.endTime),
-      startFmt: item.startTime.split(",")[0],
-      endFmt:  item.endTime.split(",")[0],
+      startStr: item.startTime,
+      endStr:  item.endTime,
       text: item.text,
     }));
 
