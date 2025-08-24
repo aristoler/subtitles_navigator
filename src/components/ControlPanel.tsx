@@ -51,7 +51,7 @@ const ControlPanel: React.FC<Props> = ({ subtitles, onVideoUpload, onSubtitleUpl
     <div className="control-panel">
       <input
         type="file"
-        accept="video/*,.mp4,.webm,.ogg,.mov,.avi,.mkv,.flv,.wmv"
+        accept=".mp4,.webm,.ogg,.mov,.avi,.mkv,.flv,.wmv"
         style={{ display: "none" }}
         ref={videoInputRef}
         onChange={handleVideoUpload}
