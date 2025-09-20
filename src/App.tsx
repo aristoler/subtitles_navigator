@@ -40,7 +40,7 @@ const App: React.FC = () => {
       const subtitleListDiv = document.querySelector('[data-subtitle-list]');
       const activeDiv = subtitleListDiv?.querySelector('.active');
       if (activeDiv) {
-        activeDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        activeDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
       setAutoSync(true);
     } else {
@@ -54,7 +54,7 @@ const App: React.FC = () => {
     const subtitleListDiv = document.querySelector('[data-subtitle-list]');
     const activeDiv = subtitleListDiv?.querySelector('.active');
     if (activeDiv) {
-      activeDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      activeDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [currentTime, autoSync]);
 
