@@ -38,16 +38,13 @@ jobs:
       - name: Build
         run: npm run build
         
-      - name: Clean docs directory
-        run: rm -rf docs/*
-
-      - name: Copy dist to docs
-        run: cp -r dist/* docs/
-
-      - name: Commit and Push docs
-        run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
-          git add docs
-          git commit -m "Update docs from dist"
-          git push
+      # Upload build output for deployment
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist 
+      
+      - name: Deploy to GitHub Pages
+        id: deploy-pages
+        uses: actions/deploy-pages@v4
+      
