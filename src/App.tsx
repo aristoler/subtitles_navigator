@@ -1,5 +1,6 @@
 // App.tsx
 import React, { useState } from "react";
+import { setCookie, getCookie } from "./utils/cookie";
 import VideoPlayer from "./components/VideoPlayer";
 import SubtitleList from "./components/SubtitleList";
 import ControlPanel from "./components/ControlPanel";
@@ -19,6 +20,7 @@ const App: React.FC = () => {
   const [subtitles, setSubtitles] = useState<SubtitleItem[]>([]);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [autoSync, setAutoSync] = useState(false);
+  const [srtFileName, setSrtFileName] = useState<string>("");
 
   const handleTimeUpdate = (time: number) => setCurrentTime(time);
 
@@ -26,6 +28,10 @@ const App: React.FC = () => {
 
   const handleSeekTo = (time: number) => {
     videoPlayerRef.current?.seek(time);
+    // Save last seek time to cookie
+    if (srtFileName) {
+      setCookie(`${srtFileName}`, JSON.stringify({ time }), 30);
+    }
   };
 
   const handleSyncSubtitle = () => {
@@ -52,6 +58,35 @@ const App: React.FC = () => {
     }
   }, [currentTime, autoSync]);
 
+  // When SRT is uploaded, check cookie and restore last time if available
+  const handleSubtitleUpload = (subs: SubtitleItem[], fileName?: string) => {
+    setSubtitles(subs);
+    if (fileName) setSrtFileName(fileName);
+    // Check for cookie
+    const cookieKey = fileName ? `${fileName}` : "";
+    if (cookieKey) {
+      const cookieVal = getCookie(cookieKey);
+      if (cookieVal) {
+        try {
+          const { time } = JSON.parse(cookieVal);
+          videoPlayerRef.current?.seek(time);
+          handleTimeUpdate(time);//make the subtitle active
+          setTimeout(() => {
+            // Scroll subtitle into view
+            const subtitleListDiv = document.querySelector('[data-subtitle-list]');
+            const activeDiv = subtitleListDiv?.querySelector('.active');
+            if (activeDiv) {
+              activeDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 2000);
+        } catch {}
+      } else {
+        // Initialize cookie
+        setCookie(cookieKey, JSON.stringify({ time: 0 }), 30);
+      }
+    }
+  };
+
   return (
     <div style={{display:'flex',flexDirection:'column',height: '100vh',overflow: 'hidden'}}>
       {/*Video Player at Top */}
@@ -69,7 +104,12 @@ const App: React.FC = () => {
         <ControlPanel
           subtitles={subtitles}
           onVideoUpload={setVideoUrl}
-          onSubtitleUpload={setSubtitles}
+          onSubtitleUpload={(subs) => {
+            // Try to get file name from input
+            const input = document.querySelector('input[type="file"][accept=".srt"]') as HTMLInputElement;
+            const fileName = input?.files?.[0]?.name || "";
+            handleSubtitleUpload(subs, fileName);
+          }}
           onSync={handleSyncSubtitle}
           autoSync={autoSync}
         />

@@ -63,8 +63,7 @@ const VideoPlayer = forwardRef<VideoPlayerHandle, Props>(
               "play",
               "progress",
               "current-time",
-              "mute",
-              "volume",
+              //"mute",
               "captions"
             ],
             captions: { active: true, update: true, language: 'auto' }
