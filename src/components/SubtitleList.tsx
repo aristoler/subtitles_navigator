@@ -1,5 +1,5 @@
 // components/SubtitleList.tsx
-import React from "react";
+import React, { useState } from "react";
 import { SubtitleItem } from "../App";
 
 interface Props {
@@ -28,27 +28,64 @@ const SubtitleList: React.FC<Props> = ({
     }
   }
 
+  const [toast, setToast] = useState(false);
+
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setToast(true);
+      setTimeout(() => setToast(false), 1200);
+    } catch (e) {
+      // fallback: do nothing
+    }
+  };
+
   return (
-    <div data-subtitle-list>
-      {subtitles.map((s) => {
-        const isActive = s.id === lastActiveId;
-        return (
-          <div
-            key={s.id}
-            ref={isActive ? activeRef : undefined}
-            className={`subtitle-panel${isActive ? ' active' : ''}`}
-            onClick={() => onSeek(s.startTime / 1000)}
-          >
-            <div className="subtitle-time">
-              {s.startStr} - {s.endStr}
+    <>
+      <div data-subtitle-list>
+        {subtitles.map((s) => {
+          const isActive = s.id === lastActiveId;
+          return (
+            <div
+              key={s.id}
+              ref={isActive ? activeRef : undefined}
+              className={`subtitle-panel${isActive ? ' active' : ''}`}
+              onClick={() => onSeek(s.startTime / 1000)}
+              onDoubleClick={() => handleCopy(s.text)}
+              style={{ position: 'relative' }}
+            >
+              <div className="subtitle-time">
+                {s.startStr} - {s.endStr}
+              </div>
+              <div className="subtitle-text">
+                {s.text}
+              </div>
             </div>
-            <div className="subtitle-text">
-              {s.text}
-            </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+      {toast && (
+        <div
+          style={{
+            position: 'fixed',
+            left: '50%',
+            bottom: '48px',
+            transform: 'translateX(-50%)',
+            background: '#333',
+            color: '#fff',
+            padding: '8px 24px',
+            borderRadius: '8px',
+            fontSize: '1em',
+            zIndex: 9999,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            transition: 'opacity 0.8s',
+            pointerEvents: 'none',
+          }}
+        >
+          copied
+        </div>
+      )}
+    </>
   );
 };
 
